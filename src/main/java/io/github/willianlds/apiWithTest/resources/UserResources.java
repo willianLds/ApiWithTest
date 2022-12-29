@@ -1,5 +1,6 @@
 package io.github.willianlds.apiWithTest.resources;
 
+import io.github.willianlds.apiWithTest.domain.User;
 import io.github.willianlds.apiWithTest.domain.dto.UserDTO;
 import io.github.willianlds.apiWithTest.services.UserService;
 import org.modelmapper.ModelMapper;
@@ -23,8 +24,8 @@ public class UserResources {
     private UserService service;
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<UserDTO> findById(@PathVariable Integer id){
-        return ResponseEntity.ok().body(mapper.map(service.findById(id),UserDTO.class));
+    public ResponseEntity<UserDTO> findById(@PathVariable Integer id) {
+        return ResponseEntity.ok().body(mapper.map(service.findById(id), UserDTO.class));
     }
 
     @GetMapping
@@ -34,8 +35,24 @@ public class UserResources {
     }
 
     @PostMapping
-    public ResponseEntity<UserDTO> create(@RequestBody UserDTO obj){
+    public ResponseEntity<UserDTO> create(@RequestBody UserDTO obj) {
         URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{id}").buildAndExpand(service.create(obj).getId()).toUri();
         return ResponseEntity.created(uri).build();
     }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<UserDTO> update(@RequestBody UserDTO obj, @PathVariable Integer id) {
+        obj.setId(id);
+        User newObj = service.update(obj);
+        return ResponseEntity.ok().body(mapper.map(newObj, UserDTO.class));
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<UserDTO> delete(@PathVariable Integer id){
+        service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+
+
 }
